@@ -6,6 +6,7 @@
 #include <cstring>
 #include <vector>
 #include <map>
+#include <boost/locale/encoding.hpp>
 #define HTTP_URL "http://hq.sinajs.cn/list="
 #define MAX_CODE_NUM 10
 
@@ -13,8 +14,10 @@ std::string RETSULT;
 
 struct stock_info
 {
-    //名称
-    std::string name;
+    //代码标识
+    std::string code_name;
+    //中文名词
+    std::string name_zh;
     //今日开盘价格
     float price_open_today;
     //昨日收盘价格
@@ -34,6 +37,16 @@ struct stock_info
     std::string time_str;
 
 };
+
+std::string UTF8toGBK(const std::string & str)
+{
+    return boost::locale::conv::between(str, "GBK", "UTF-8");
+}
+
+std::string GBKtoUTF8(const std::string & str)
+{
+    return boost::locale::conv::between(str, "UTF-8", "GBK");
+}
 
 //字符串分割
 void strSplit(const std::string &s, std::vector<std::string> &v, const std::string &c)
@@ -61,11 +74,13 @@ bool vector2StockInfo(std::vector<std::string> &v, struct stock_info *info)
         std::cerr<<"当前数组中数据信息不完整，退出转换！"<<std::endl;
         return false;
     }
-
-    int index0= v[0].find_last_of("_");
+    //形如 var hq_str_sz000998="隆平高科, 样式
+    int index0= v[0].find_last_of("_")+1;
     int index1= v[0].find_first_of("=");
-    std::string name = v[0].substr(index0+1,index1-index0-1);
-    info->name = name;
+    std::string codeName = v[0].substr(index0,index1-index0);
+    std::string name_zh = v[0].substr(index1+1+1,v[0].size()-index1);
+    info->code_name = codeName;
+    info->name_zh = name_zh;
     info->price_open_today = atof(v[1].c_str());
     info->price_close_lastday = atof(v[2].c_str());
     info->price_current = atof(v[3].c_str());
@@ -91,6 +106,8 @@ size_t handle_data_callback(void *ptr, size_t size, size_t nmemb, std::string &s
     //std::cout<<"[nmemb]"<<nmemb<<std::endl;
     const char * con_ptr = (char*)ptr;
     stream.assign(con_ptr,nmemb);
+    stream = GBKtoUTF8(stream);//这样转完后可正常显示中文
+    //std::cout<<"[data]"<<stream<<std::endl;
     return size;
 };
 
@@ -98,6 +115,7 @@ CURL * initCurl()
 {
     CURL *curl;                     //定义CURL类型的指针
     CURLcode res; 
+
     curl = curl_easy_init();        //初始化一个CURL类型的指针
     if(curl!=NULL)
     {
@@ -118,10 +136,8 @@ std::string getStockDataForCode2(CURL *curl, std::string code)
         std::string url = HTTP_URL+code;
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());  
         res = curl_easy_perform(curl);
-        //清除curl操作.
         if(res !=0)
         {
-            //curl_easy_cleanup(curl);
             ret = RETSULT;
         } 
     }
@@ -249,10 +265,11 @@ int genCYCode(std::vector<std::string> &codeList)
 void printInfo(struct stock_info info)
 {
     printf("----------------------------------\n");
-    std::cout<<"[代码]："<<info.name<<std::endl;
+    std::cout<<"[ 代码标识]："<<info.code_name<<std::endl;
+    std::cout<<"[ 中文名称]："<<info.name_zh<<std::endl;
     std::cout<<"[今日开盘价]："<<info.price_open_today<<std::endl;
     std::cout<<"[昨日收盘价]："<<info.price_close_lastday<<std::endl;
-    std::cout<<"[当前价]："<<info.price_current<<std::endl;
+    std::cout<<"[ 当 前 价]："<<info.price_current<<std::endl;
     std::cout<<"[今日最高价]："<<info.price_max<<std::endl;
     std::cout<<"[今日最低价]："<<info.price_min<<std::endl;
     std::cout<<"[成交量-股]："<<info.total_num_turnover<<std::endl;

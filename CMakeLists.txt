@@ -13,6 +13,9 @@ set(SOURCE_FILES src/stock_info.cpp
 )
 set(LIBRARY_FILES boost_serialization
                    curl
+                   boost_system
+                   boost_thread
+                   boost_locale
         
 )
 
