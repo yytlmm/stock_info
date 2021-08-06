@@ -8,7 +8,7 @@
 #include <map>
 #include <boost/locale/encoding.hpp>
 #define HTTP_URL "http://hq.sinajs.cn/list="
-#define MAX_CODE_NUM 10
+#define MAX_CODE_NUM 1000
 
 std::string RETSULT;
 
@@ -191,28 +191,28 @@ int genSHCode(std::vector<std::string> &codeList)
     int num_601 = 601*1000;
     int num_603 = 603*1000;
     int num_605 = 605*1000;
-    for(int i=1;i<MAX_CODE_NUM;i++)
+    for(int i=0;i<MAX_CODE_NUM;i++)
     {
         int num = num_600+i;
         std::string tmp = preCode+std::to_string(num);
         codeList.push_back(tmp);
     }
 
-    for(int i=1;i<MAX_CODE_NUM;i++)
+    for(int i=0;i<MAX_CODE_NUM;i++)
     {
         int num = num_601+i;
         std::string tmp = preCode+std::to_string(num);
         codeList.push_back(tmp);
     }
 
-    for(int i=1;i<MAX_CODE_NUM;i++)
+    for(int i=0;i<MAX_CODE_NUM;i++)
     {
         int num = num_603+i;
         std::string tmp = preCode+std::to_string(num);
         codeList.push_back(tmp);
     }
 
-    for(int i=1;i<MAX_CODE_NUM;i++)
+    for(int i=0;i<MAX_CODE_NUM;i++)
     {
         int num = num_605+i;
         std::string tmp = preCode+std::to_string(num);
@@ -221,20 +221,48 @@ int genSHCode(std::vector<std::string> &codeList)
     return codeList.size();
 };
 
-//深圳 以000开头
+//深圳 以000开头 001 002 003
 int genSZCode(std::vector<std::string> &codeList)
 {
     std::string preCode = "sz000";
+    std::string preCode1 = "sz001";
+    std::string preCode2 = "sz002";
+    std::string preCode3 = "sz003";
+    codeList.push_back("sz001000");
+    codeList.push_back("sz002000");
+    codeList.push_back("sz003000");
+
     for(int i=1;i<MAX_CODE_NUM;i++)
     {
-        std::string tmp;
+        std::string tmp,tmp1,tmp2,tmp3;
         if(i<10)
+        {
             tmp = preCode+"00"+std::to_string(i);
+            tmp1 = preCode1+"00"+std::to_string(i);
+            tmp2 = preCode2+"00"+std::to_string(i);
+            tmp3 = preCode3+"00"+std::to_string(i);
+        }
+            
         else if(i<100)
+        {
             tmp = preCode+"0"+std::to_string(i);
+            tmp1 = preCode1+"0"+std::to_string(i);
+            tmp2 = preCode2+"0"+std::to_string(i);
+            tmp3 = preCode3+"0"+std::to_string(i);
+        }
+            
         else
+        {
             tmp = preCode+std::to_string(i);
+            tmp1 = preCode1+std::to_string(i);
+            tmp2 = preCode2+std::to_string(i);
+            tmp3 = preCode3+std::to_string(i);
+        }
+            
         codeList.push_back(tmp);
+        codeList.push_back(tmp1);
+        codeList.push_back(tmp2);
+        codeList.push_back(tmp3);
     }
     return codeList.size();
 };
@@ -244,7 +272,7 @@ int genCYCode(std::vector<std::string> &codeList)
 {
     std::string preCode = "sz";
     int sz_300 = 300*1000;
-    for(int i=1;i<MAX_CODE_NUM;i++)
+    for(int i=0;i<MAX_CODE_NUM;i++)
     {
         int num = sz_300+i;
         std::string tmp = preCode+std::to_string(num);
@@ -253,7 +281,7 @@ int genCYCode(std::vector<std::string> &codeList)
 
     preCode = "sh";
     int sh_688 = 688*1000;
-    for(int i=1;i<MAX_CODE_NUM;i++)
+    for(int i=0;i<MAX_CODE_NUM;i++)
     {
         int num = sh_688+i;
         std::string tmp = preCode+std::to_string(num);
@@ -332,7 +360,7 @@ int main(int argc, char *argv[])
     std::cout<<"当前共有"<<stockList.size()<<"支代码今日上涨"<<std::endl;
     for(int i=0;i<stockList.size();i++)
     {
-        std::cout<<"第["<<i<<"] 支上涨的股票信息:"<<std::endl;
+        std::cout<<"第["<<i+1<<"] 支上涨的股票信息:"<<std::endl;
         printInfo(stockList[i]);
     }
 
