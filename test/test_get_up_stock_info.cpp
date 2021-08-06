@@ -7,7 +7,7 @@
 #include <vector>
 #include <map>
 #define HTTP_URL "http://hq.sinajs.cn/list="
-#define MAX_CODE_NUM 10
+#define MAX_CODE_NUM 1000
 
 std::string RETSULT;
 
@@ -216,10 +216,21 @@ int genSZCode(std::vector<std::string> &codeList)
 //创业板 以300开头
 int genCYCode(std::vector<std::string> &codeList)
 {
-    std::string preCode = "sz300";
+    std::string preCode = "sz";
+    int sz_300 = 300*1000;
     for(int i=1;i<MAX_CODE_NUM;i++)
     {
-        std::string tmp = preCode+std::to_string(i);
+        int num = sz_300+i;
+        std::string tmp = preCode+std::to_string(num);
+        codeList.push_back(tmp);
+    }
+
+    preCode = "sh";
+    int sh_688 = 688*1000;
+    for(int i=1;i<MAX_CODE_NUM;i++)
+    {
+        int num = sh_688+i;
+        std::string tmp = preCode+std::to_string(num);
         codeList.push_back(tmp);
     }
     return codeList.size();
@@ -257,6 +268,7 @@ int main(int argc, char *argv[])
     {
         int size0 = genSZCode(codeList);
         int size1 = genSHCode(codeList);
+        int size2 = genCYCode(codeList);
     }else{
         codeList.push_back(stock_code);
     }
