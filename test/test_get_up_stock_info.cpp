@@ -7,7 +7,7 @@
 #include <vector>
 #include <map>
 #define HTTP_URL "http://hq.sinajs.cn/list="
-#define MAX_CODE_NUM 1000
+#define MAX_CODE_NUM 10
 
 std::string RETSULT;
 
@@ -29,6 +29,9 @@ struct stock_info
     int total_num_turnover;
     //成交金额，单位元
     double total_money_turnover;
+
+    std::string date_str;
+    std::string time_str;
 
 };
 
@@ -70,6 +73,13 @@ bool vector2StockInfo(std::vector<std::string> &v, struct stock_info *info)
     info->price_min = atof(v[5].c_str());
     info->total_num_turnover = atoi(v[8].c_str());
     info->total_money_turnover = atof(v[9].c_str());
+    
+    //日期时间
+    if(v.size() >=32)
+    {
+        info->date_str = v[30];
+        info->time_str = v[31];
+    }
     return true;
 
 };
@@ -246,6 +256,8 @@ void printInfo(struct stock_info info)
     std::cout<<"[今日最高价]："<<info.price_max<<std::endl;
     std::cout<<"[今日最低价]："<<info.price_min<<std::endl;
     std::cout<<"[成交量-股]："<<info.total_num_turnover<<std::endl;
+    std::cout<<"[今日日期]："<<info.date_str<<std::endl;
+    std::cout<<"[当前时刻]："<<info.time_str<<std::endl;
     printf("----------------------------------\n");
 
 };
